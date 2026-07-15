@@ -1,0 +1,40 @@
+services:
+  battery_simulator:
+    build: .
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      PYTHONUNBUFFERED: "1"
+      CELL_COUNT: ${CELL_COUNT}
+    command: python src/battery_simulator.py
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    mem_limit: 128m
+    cpus: 0.50
+
+  bms_controller:
+    build: .
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      PYTHONUNBUFFERED: "1"
+      SIMULATOR_URL: "http://battery_simulator:5000/voltages"
+      MONITOR_THRESHOLD: ${MONITOR_THRESHOLD}
+      BALANCE_THRESHOLD: ${BALANCE_THRESHOLD}
+      CONTROL_INTERVAL: ${CONTROL_INTERVAL}
+    command: python src/bms_controller.py
+    depends_on:
+      battery_simulator:
+        condition: service_healthy
+    mem_limit: 128m
+    cpus: 0.50
