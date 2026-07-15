@@ -38,3 +38,12 @@ services:
         condition: service_healthy
     mem_limit: 128m
     cpus: 0.50
+
+  dev:
+    build: .
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      PYTHONUNBUFFERED: "1"
+    command: sleep infinity

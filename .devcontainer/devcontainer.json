@@ -1,11 +1,16 @@
 {
   "name": "BMS Network Demo Dev Container",
   "dockerComposeFile": "../docker-compose.yml",
-  "service": "bms_controller",
+  "service": "dev",
   "workspaceFolder": "/app",
   "shutdownAction": "stopCompose",
+  "postCreateCommand": "pip install --no-cache-dir -r requirements.txt",
   "customizations": {
     "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "terminal.integrated.defaultProfile.linux": "sh"
+      },
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
